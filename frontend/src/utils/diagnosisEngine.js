@@ -73,12 +73,14 @@ export const computeDiagnoses = (answerMap, contextFlags, observations) => {
       const diagnosis = MEGAFLOW.diagnoses[id];
       if (!diagnosis) return null;
 
-      // Calculate adjusted likelihood
+      // Calculate adjusted likelihood - ensure it stays as decimal (0-1)
       let likelihood = diagnosis.baseLikelihood;
-      // Boost likelihood slightly for multiple mentions
+      // Boost likelihood slightly for multiple mentions, but cap at 0.95
       if (data.count > 1) {
         likelihood = Math.min(0.95, likelihood + (data.count - 1) * 0.05);
       }
+      // Ensure likelihood is always between 0 and 1
+      likelihood = Math.max(0, Math.min(1, likelihood));
 
       // Determine final severity
       let finalSeverity = data.assignedSeverity || diagnosis.severity || detectedSeverity;
