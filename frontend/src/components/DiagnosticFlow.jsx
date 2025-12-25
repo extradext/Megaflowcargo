@@ -150,7 +150,7 @@ const DiagnosticFlow = () => {
                   onClick={handleStartOver}
                   className="text-sm text-slate-600 hover:text-slate-900"
                 >
-                  Start Over
+                  {currentStep === 'results' ? 'Start over from beginning' : 'Start Over'}
                 </Button>
               )}
             </div>
