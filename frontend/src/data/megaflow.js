@@ -368,7 +368,17 @@ export const MEGAFLOW = {
       options: [
         { id: "b_soft", label: "Pedal feels soft / sinks", next: "brakes.distance", assign: { candidate: "brake_hydraulic", severity: "critical" } },
         { id: "b_long", label: "Takes longer to stop than it should", next: "brakes.pulling", assign: { candidate: "brake_wear" } },
-        { id: "b_noise", label: "Grinding or squealing noise", next: "brakes.pulling", assign: { candidate: "brake_noise" } }
+        { id: "b_noise", label: "Grinding or squealing noise", next: "brakes.noise_timing", assign: { candidate: "brake_noise" } }
+      ]
+    },
+    "brakes.noise_timing": {
+      id: "brakes.noise_timing",
+      type: "question",
+      prompt: "When does the noise occur?",
+      options: [
+        { id: "bn_pedal_only", label: "Only when pressing the brake pedal", next: "brakes.pulling", assign: { candidate: "brake_wear" } },
+        { id: "bn_off_pedal", label: "Also when pedal is released / when not braking", next: "brakes.pulling", assign: { candidate: "stuck_caliper_possible", severity: "caution" } },
+        { id: "bn_not_sure", label: "Not sure", next: "brakes.pulling" }
       ]
     },
     "brakes.distance": {
