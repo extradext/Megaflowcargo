@@ -11,7 +11,9 @@ import { MEGAFLOW } from '../data/megaflow';
 import { computeDiagnoses } from '../utils/diagnosisEngine';
 
 const DiagnosticFlow = () => {
-  const [currentStep, setCurrentStep] = useState('context');
+  // Check if context has been seen before
+  const contextSeen = localStorage.getItem('carScanContextSeen') === 'true';
+  const [currentStep, setCurrentStep] = useState(contextSeen ? 'symptom' : 'context');
   const [historyStack, setHistoryStack] = useState([]);
   const [contextFlags, setContextFlags] = useState([]);
   const [answerMap, setAnswerMap] = useState({});
