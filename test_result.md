@@ -281,6 +281,21 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Brake Noise Timing Question Feature"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/data/megaflow.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Testing new brake noise timing question feature - need to verify question appears after 'Grinding or squealing noise' selection and test all three timing options with their expected behaviors"
+        - working: true
+        - agent: "testing"
+        - comment: "TESTED SUCCESSFULLY: New brake noise timing question feature working perfectly. ✅ Question 'When does the noise occur?' appears after selecting 'Grinding or squealing noise'. ✅ All three timing options present and functional: 'Only when pressing the brake pedal' (favors brake wear), 'Also when pedal is released / when not braking' (escalates to CAUTION severity), 'Not sure' (maintains original diagnosis). ✅ Flow continues correctly to 'Does the car pull to one side when braking?' for all paths. ✅ Severity escalation works for stuck caliper scenario. ✅ Back button navigation works correctly. ✅ Feature integrates seamlessly into existing brake flow. ✅ No errors or broken navigation detected."
+
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive end-to-end testing of CarScan diagnostic flow application. Will test complete user journey from context selection through results display, including observations panel and navigation features."
@@ -288,3 +303,5 @@ agent_communication:
     - message: "COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY: All major features of the CarScan diagnostic flow application are working correctly. Tested complete end-to-end flow including context selection, symptom selection, question answering, modifier questions, results display, observations panel, navigation, and mobile responsiveness. Only minor issue: clipboard API restricted by browser security (expected). Application is fully functional and ready for production use."
     - agent: "testing"
     - message: "CLIPBOARD/EXPORT FIX TESTING COMPLETED: Tested the copy summary feature and all previous fixes. RESULTS: ✅ Copy summary button works perfectly - shows 'Copied to clipboard!' with checkmark, reverts after 2 seconds. ✅ Fallback method works when Clipboard API is disabled. ✅ No runtime errors detected. ✅ 'Start over from beginning' text present on results page. ✅ Back button available on results page. ✅ Likelihood percentages valid (82%, not over 100%). ✅ localStorage context behavior working correctly - context page shows only once, then skipped on subsequent visits. All requested features are working as expected."
+    - agent: "testing"
+    - message: "BRAKE NOISE TIMING FEATURE TESTING COMPLETED: Comprehensive testing of the new brake noise timing question feature. RESULTS: ✅ NEW FEATURE SUCCESSFULLY IMPLEMENTED: Question 'When does the noise occur?' appears after selecting 'Grinding or squealing noise' in brake flow. ✅ All three timing options functional: 'Only when pressing brake pedal' (favors brake wear diagnosis), 'Also when pedal released/not braking' (escalates to CAUTION severity and favors stuck caliper), 'Not sure' (maintains original brake noise diagnosis). ✅ Flow continues correctly to pulling question for all paths. ✅ Severity escalation works as expected. ✅ Back button navigation works correctly through all questions. ✅ Results page displays appropriate diagnoses with correct severity badges. ✅ Feature integrates seamlessly into existing brake diagnostic flow. ✅ No broken navigation or errors detected. Feature is ready for production use."
