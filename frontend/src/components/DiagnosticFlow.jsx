@@ -101,8 +101,9 @@ const DiagnosticFlow = () => {
   };
 
   const handleStartOver = () => {
-    if (window.confirm('Start over? This will reset all your answers.')) {
-      setCurrentStep('context');
+    if (window.confirm('Start over from beginning? This will reset all your answers.')) {
+      const contextWasSeen = localStorage.getItem('carScanContextSeen') === 'true';
+      setCurrentStep(contextWasSeen ? 'symptom' : 'context');
       setHistoryStack([]);
       setContextFlags([]);
       setAnswerMap({});
@@ -110,7 +111,7 @@ const DiagnosticFlow = () => {
     }
   };
 
-  const canGoBack = historyStack.length > 0 && currentStep !== 'results';
+  const canGoBack = historyStack.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
