@@ -35,6 +35,7 @@ const DiagnosticFlow = () => {
   const handleContextContinue = (selectedFlags) => {
     setContextFlags(selectedFlags);
     pushHistory('context', null);
+    localStorage.setItem('carScanContextSeen', 'true');
     setCurrentStep('symptom');
   };
 
