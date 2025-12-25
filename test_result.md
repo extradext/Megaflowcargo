@@ -225,7 +225,22 @@ frontend:
         - agent: "testing"
         - comment: "TESTED SUCCESSFULLY: Start Over functionality working perfectly. Shows confirmation dialog 'Start over? This will reset all your answers.' When confirmed, successfully returns to context selection page and resets all state."
 
-  - task: "Mobile Responsive Design"
+  - task: "Copy Summary Feature"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/ResultsView.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Testing clipboard/export fix - need to verify copy button functionality, success state, fallback method, and button revert behavior"
+        - working: true
+        - agent: "testing"
+        - comment: "TESTED SUCCESSFULLY: Copy summary feature working perfectly. Button shows 'Copy summary for mechanic', changes to 'Copied to clipboard!' with checkmark icon on click, reverts after ~2 seconds. Fallback method works when Clipboard API is disabled. No runtime errors detected. All three copy methods (Clipboard API, execCommand, alert fallback) implemented correctly."
+
+  - task: "Context Page localStorage Behavior"
     implemented: true
     working: true
     file: "/app/frontend/src/components/DiagnosticFlow.jsx"
@@ -235,10 +250,25 @@ frontend:
     status_history:
         - working: "NA"
         - agent: "testing"
-        - comment: "Initial testing - need to verify mobile-first responsive design at 375px width"
+        - comment: "Testing localStorage context behavior - need to verify context page shows only once then is skipped on subsequent visits"
         - working: true
         - agent: "testing"
-        - comment: "TESTED SUCCESSFULLY: Mobile-first responsive design working well. Tested at 375px (mobile), 768px (tablet), and 1920px (desktop). Layout adapts properly across viewports. Minor: tap targets could be slightly larger (32px vs recommended 48px) but still functional."
+        - comment: "TESTED SUCCESSFULLY: localStorage context behavior working correctly. Context page shows on first visit, localStorage is set to 'true' after completion, context page is skipped on subsequent visits/reloads. Clearing localStorage correctly resets behavior to show context page again."
+
+  - task: "Results Page Text and Navigation"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/DiagnosticFlow.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Testing results page fixes - need to verify 'Start over from beginning' text, back button availability, and likelihood percentages"
+        - working: true
+        - agent: "testing"
+        - comment: "TESTED SUCCESSFULLY: All results page elements working correctly. 'Start over from beginning' text present on results page. Back button (ChevronLeft) available and functional. Likelihood percentages valid (82%, not over 100%). Primary diagnosis 'Likely dead or weak battery' displays correctly with proper severity indicators."
 
 metadata:
   created_by: "testing_agent"
