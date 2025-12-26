@@ -308,3 +308,11 @@ const escalateSeverity = (current, newSeverity) => {
   const newLevel = levels[newSeverity] || 0;
   return newLevel > currentLevel ? newSeverity : current;
 };
+
+
+const escalateSeverity = (current, newSeverity) => {
+  const levels = { normal: 0, caution: 1, critical: 2 };
+  const currentLevel = levels[current] || 0;
+  const newLevel = levels[newSeverity] || 0;
+  return newLevel > currentLevel ? newSeverity : current;
+};
