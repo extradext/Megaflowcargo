@@ -1,120 +1,131 @@
 import { MEGAFLOW } from '../data/megaflow';
 
-export const computeDiagnoses = (answerMap, contextFlags, observations) => {
-  // Collect all candidates from answers
-  const candidates = new Map();
-  let detectedSeverity = 'normal';
+// Confidence bounds as per specification
+const CONFIDENCE_FLOOR = 0.30;
+const CONFIDENCE_BASELINE_CEILING = 0.85;
+const CONFIDENCE_TOOL_CEILING = 0.95;
 
-  // Process all answers to collect candidates
-  Object.values(answerMap).forEach(answer => {
+export const computeDiagnoses = (answerMap, contextFlags, observations) => {
+  // Extract terminal diagnosis from the last answer that assigned a candidate
+  let primaryDiagnosisId = null;
+  let terminalSeverity = null;
+  let secondaryDiagnosisId = null;
+  
+  // Find terminal diagnosis assignment (last answer with candidate)
+  const answers = Object.entries(answerMap);
+  for (let i = answers.length - 1; i >= 0; i--) {
+    const [nodeId, answer] = answers[i];
+    
+    // Check regular answer
     if (answer.assignData?.candidate) {
-      const candidateId = answer.assignData.candidate;
-      if (!candidates.has(candidateId)) {
-        candidates.set(candidateId, {
-          id: candidateId,
-          count: 1,
-          assignedSeverity: answer.assignData.severity || null
-        });
-      } else {
-        const existing = candidates.get(candidateId);
-        existing.count++;
-        if (answer.assignData.severity) {
-          existing.assignedSeverity = answer.assignData.severity;
+      if (!primaryDiagnosisId) {
+        primaryDiagnosisId = answer.assignData.candidate;
+        terminalSeverity = answer.assignData.severity;
+      } else if (!secondaryDiagnosisId) {
+        secondaryDiagnosisId = answer.assignData.candidate;
+      }
+    }
+    
+    // Check modifier answers
+    if (answer.modifierAnswers && !primaryDiagnosisId) {
+      const modAnswers = Object.values(answer.modifierAnswers);
+      for (let j = modAnswers.length - 1; j >= 0; j--) {
+        if (modAnswers[j].assignData?.candidate) {
+          if (!primaryDiagnosisId) {
+            primaryDiagnosisId = modAnswers[j].assignData.candidate;
+            terminalSeverity = modAnswers[j].assignData.severity;
+          } else if (!secondaryDiagnosisId) {
+            secondaryDiagnosisId = modAnswers[j].assignData.candidate;
+          }
         }
       }
     }
-
-    // Check for severity assignments
-    if (answer.assignData?.severity) {
-      detectedSeverity = escalateSeverity(detectedSeverity, answer.assignData.severity);
-    }
-
-    // Process modifier answers
-    if (answer.modifierAnswers) {
-      Object.values(answer.modifierAnswers).forEach(modAnswer => {
-        if (modAnswer.assignData?.candidate) {
-          const candidateId = modAnswer.assignData.candidate;
-          if (!candidates.has(candidateId)) {
-            candidates.set(candidateId, {
-              id: candidateId,
-              count: 1,
-              assignedSeverity: modAnswer.assignData.severity || null
-            });
-          } else {
-            const existing = candidates.get(candidateId);
-            existing.count++;
-            if (modAnswer.assignData.severity) {
-              existing.assignedSeverity = modAnswer.assignData.severity;
-            }
-          }
-        }
-      });
-    }
-  });
-
-  // Check active observations for severity escalations
+  }
+  
+  // Fallback if no diagnosis found
+  if (!primaryDiagnosisId) {
+    primaryDiagnosisId = 'generic_check_engine';
+  }
+  
+  // Get diagnosis definitions
+  const primaryDiagnosisDef = MEGAFLOW.diagnoses[primaryDiagnosisId];
+  const secondaryDiagnosisDef = secondaryDiagnosisId ? MEGAFLOW.diagnoses[secondaryDiagnosisId] : null;
+  
+  if (!primaryDiagnosisDef) {
+    // Fallback to generic
+    primaryDiagnosisId = 'generic_check_engine';
+  }
+  
+  // Calculate confidence for primary (static baseLikelihood with minimal adjustments)
+  let primaryLikelihood = primaryDiagnosisDef?.baseLikelihood || 0.50;
+  
+  // Apply context flag adjustments (very limited, max ±5%)
+  let contextAdjustment = 0;
+  if (contextFlags.includes('out_of_fuel') && primaryDiagnosisId.includes('fuel')) {
+    contextAdjustment += 0.05;
+  }
+  if (contextFlags.includes('flat_tire') && primaryDiagnosisId.includes('tire')) {
+    contextAdjustment += 0.05;
+  }
+  if (contextFlags.includes('leak') && primaryDiagnosisId.includes('leak')) {
+    contextAdjustment += 0.05;
+  }
+  
+  primaryLikelihood += contextAdjustment;
+  
+  // Apply hard floor and ceiling
+  primaryLikelihood = Math.max(CONFIDENCE_FLOOR, Math.min(CONFIDENCE_BASELINE_CEILING, primaryLikelihood));
+  
+  // Determine severity (escalation logic)
+  let detectedSeverity = terminalSeverity || primaryDiagnosisDef?.severity || 'normal';
+  
+  // Check observations for severity escalation
   const activeObservations = observations.filter(o => o.state === 'active');
   activeObservations.forEach(obs => {
-    // Exhaust smell in cabin/vents is critical
     if (obs.tags.includes('exhaust_fumes') && 
         (obs.smellSource === 'cabin' || obs.smellSource === 'vents')) {
       detectedSeverity = 'critical';
     }
   });
-
-  // If no candidates found, use a default based on context
-  if (candidates.size === 0) {
-    candidates.set('generic_check_engine', { id: 'generic_check_engine', count: 1, assignedSeverity: null });
-  }
-
-  // Rank candidates by count and base likelihood
-  const rankedCandidates = Array.from(candidates.entries())
-    .map(([id, data]) => {
-      const diagnosis = MEGAFLOW.diagnoses[id];
-      if (!diagnosis) return null;
-
-      // Calculate adjusted likelihood - ensure it stays as decimal (0-1)
-      let likelihood = diagnosis.baseLikelihood;
-      // Boost likelihood slightly for multiple mentions, but cap at 0.95
-      if (data.count > 1) {
-        likelihood = Math.min(0.95, likelihood + (data.count - 1) * 0.05);
-      }
-      // Ensure likelihood is always between 0 and 1
-      likelihood = Math.max(0, Math.min(1, likelihood));
-
-      // Determine final severity
-      let finalSeverity = data.assignedSeverity || diagnosis.severity || detectedSeverity;
-      finalSeverity = escalateSeverity(finalSeverity, detectedSeverity);
-
-      return {
-        diagnosis: { ...diagnosis, id },
-        likelihood,
-        severity: finalSeverity,
-        count: data.count
+  
+  detectedSeverity = escalateSeverity(detectedSeverity, primaryDiagnosisDef?.severity || 'normal');
+  
+  // Calculate secondary if exists (scaled down relative to primary)
+  let secondaryResult = null;
+  if (secondaryDiagnosisDef) {
+    let secondaryLikelihood = secondaryDiagnosisDef.baseLikelihood;
+    
+    // Scale down secondary relative to primary (typically 10-20% less)
+    secondaryLikelihood = Math.min(secondaryLikelihood, primaryLikelihood - 0.10);
+    
+    // Apply floor
+    secondaryLikelihood = Math.max(CONFIDENCE_FLOOR, secondaryLikelihood);
+    
+    // Only show secondary if within reasonable range of primary (gap < 30%)
+    if (primaryLikelihood - secondaryLikelihood < 0.30) {
+      secondaryResult = {
+        diagnosis: { ...secondaryDiagnosisDef, id: secondaryDiagnosisId },
+        likelihood: secondaryLikelihood,
+        severity: secondaryDiagnosisDef.severity || detectedSeverity
       };
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      // Sort by likelihood descending
-      if (Math.abs(a.likelihood - b.likelihood) > 0.05) {
-        return b.likelihood - a.likelihood;
-      }
-      // Then by count
-      return b.count - a.count;
-    });
-
-  const primary = rankedCandidates[0];
-  const secondary = rankedCandidates[1] && 
-    (rankedCandidates[1].likelihood > primary.likelihood - 0.15)
-    ? rankedCandidates[1]
-    : null;
-
+    }
+  }
+  
+  // Optional: Apply negative evidence (reduce incompatible diagnoses)
+  // Currently not implemented - could check for contradictory paths in answerMap
+  
+  const primary = {
+    diagnosis: { ...primaryDiagnosisDef, id: primaryDiagnosisId },
+    likelihood: primaryLikelihood,
+    severity: detectedSeverity
+  };
+  
   // Get commonly mistaken for
-  const commonMistakenFor = MEGAFLOW.commonMistakenFor[primary.diagnosis.id] || [];
-
+  const commonMistakenFor = MEGAFLOW.commonMistakenFor[primaryDiagnosisId] || [];
+  
   return {
     primary,
-    secondary,
+    secondary: secondaryResult,
     commonMistakenFor
   };
 };
