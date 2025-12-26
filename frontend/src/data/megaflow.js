@@ -366,9 +366,9 @@ export const MEGAFLOW = {
       type: "question",
       prompt: "What describes your brake issue best?",
       options: [
-        { id: "b_soft", label: "Pedal feels soft / sinks", next: "brakes.distance", assign: { candidate: "brake_hydraulic", severity: "critical" } },
-        { id: "b_long", label: "Takes longer to stop than it should", next: "brakes.pulling", assign: { candidate: "brake_wear" } },
-        { id: "b_noise", label: "Grinding or squealing noise", next: "brakes.noise_timing", assign: { candidate: "brake_noise" } }
+        { id: "b_soft", label: "Pedal feels soft / sinks", next: "brakes.distance" },
+        { id: "b_long", label: "Takes longer to stop than it should", next: "brakes.pulling" },
+        { id: "b_noise", label: "Grinding or squealing noise", next: "brakes.noise_timing" }
       ]
     },
     "brakes.noise_timing": {
@@ -376,8 +376,8 @@ export const MEGAFLOW = {
       type: "question",
       prompt: "When does the noise occur?",
       options: [
-        { id: "bn_pedal_only", label: "Only when pressing the brake pedal", next: "brakes.pulling", assign: { candidate: "brake_wear" } },
-        { id: "bn_off_pedal", label: "Also when pedal is released / when not braking", next: "brakes.pulling", assign: { candidate: "stuck_caliper_possible", severity: "caution" } },
+        { id: "bn_pedal_only", label: "Only when pressing the brake pedal", next: "brakes.pulling" },
+        { id: "bn_off_pedal", label: "Also when pedal is released / when not braking", next: "brakes.pulling" },
         { id: "bn_not_sure", label: "Not sure", next: "brakes.pulling" }
       ]
     },
@@ -386,7 +386,7 @@ export const MEGAFLOW = {
       type: "question",
       prompt: "Is stopping distance longer than normal?",
       options: [
-        { id: "bd_yes", label: "Yes", next: "brakes.pulling", assign: { candidate: "brake_hydraulic" } },
+        { id: "bd_yes", label: "Yes", next: "brakes.pulling" },
         { id: "bd_no", label: "No / unsure", next: "brakes.pulling" }
       ]
     },
@@ -395,7 +395,7 @@ export const MEGAFLOW = {
       type: "question",
       prompt: "Does the car pull to one side when braking?",
       options: [
-        { id: "bp_yes", label: "Yes", next: "brakes.smell", assign: { candidate: "stuck_caliper_possible" } },
+        { id: "bp_yes", label: "Yes", next: "brakes.smell" },
         { id: "bp_no", label: "No", next: "brakes.smell" }
       ]
     },
@@ -405,7 +405,7 @@ export const MEGAFLOW = {
       prompt: "Do you notice a hot/burning smell after a short drive?",
       options: [
         { id: "bs_yes", label: "Yes", next: "results", assign: { candidate: "stuck_caliper_possible", severity: "caution" } },
-        { id: "bs_no", label: "No", next: "results" }
+        { id: "bs_no", label: "No", next: "results", assign: { candidate: "brake_wear", severity: "caution" } }
       ]
     },
 
