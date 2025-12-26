@@ -404,8 +404,8 @@ export const MEGAFLOW = {
       type: "question",
       prompt: "Do you notice a hot/burning smell after a short drive?",
       options: [
-        { id: "bs_yes", label: "Yes", next: "results", assign: { candidate: "stuck_caliper_possible", severity: "caution" } },
-        { id: "bs_no", label: "No", next: "results", assign: { candidate: "brake_wear", severity: "caution" } }
+        { id: "bs_yes", label: "Yes", next: "results" },
+        { id: "bs_no", label: "No", next: "results" }
       ]
     },
 
