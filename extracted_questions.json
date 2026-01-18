@@ -1,0 +1,245 @@
+{
+  "source": "old_build",
+  "questions": [
+    {
+      "text": "When you try to start the car, what happens?",
+      "role": "discriminator",
+      "intuition": "Clicking means starter engaging but weak battery; cranking but no start means fuel or spark issue."
+    },
+    {
+      "text": "Do the dashboard/interior lights seem dim or flickering?",
+      "role": "discriminator",
+      "intuition": "Dim lights confirm battery weakness; normal lights point to starter or connections."
+    },
+    {
+      "text": "How does it crank?",
+      "role": "discriminator",
+      "intuition": "Slow crank means dying battery; normal speed crank means fuel or ignition problem."
+    },
+    {
+      "text": "Do ANY lights, chimes, or electronics turn on when you try?",
+      "role": "discriminator",
+      "intuition": "No power at all means dead battery or main power loss; some power means starter or fuel issue."
+    },
+    {
+      "text": "Did this start suddenly, or has it been getting worse?",
+      "role": "context_qualifier",
+      "intuition": "Sudden failure suggests fuel or immobilizer; gradual degradation suggests sensor or tune issues."
+    },
+    {
+      "text": "Do you see a flashing key/security/immobilizer light?",
+      "role": "bias_corrector",
+      "intuition": "Prevents misdiagnosing immobilizer lockout as battery or starter failure."
+    },
+    {
+      "text": "Does your fuel gauge usually read correctly?",
+      "role": "bias_corrector",
+      "intuition": "Unreliable gauge increases likelihood of out-of-fuel despite gauge reading."
+    },
+    {
+      "text": "When the car stalls, what are you doing?",
+      "role": "discriminator",
+      "intuition": "Stalling at idle suggests idle control; under load suggests fuel delivery problem."
+    },
+    {
+      "text": "After it stalls, does it restart easily?",
+      "role": "discriminator",
+      "intuition": "Immediate restart means idle issue; needs wait time means fuel pressure or heat soak."
+    },
+    {
+      "text": "Does it stall after bumps or turning?",
+      "role": "discriminator",
+      "intuition": "Motion-triggered stalling points to loose connection or fuel slosh in near-empty tank."
+    },
+    {
+      "text": "Does it stall mostly when coming to a stop?",
+      "role": "discriminator",
+      "intuition": "Deceleration stalling is classic idle air control valve or throttle body issue."
+    },
+    {
+      "text": "What happens when you shift into drive and press the gas?",
+      "role": "discriminator",
+      "intuition": "No movement means transmission not engaging; high RPM but slow movement means slipping clutches."
+    },
+    {
+      "text": "When you press the gas, how does the engine respond?",
+      "role": "discriminator",
+      "intuition": "Normal RPM rise but no movement confirms transmission issue; no RPM means engine power problem."
+    },
+    {
+      "text": "If you put it in neutral on a flat surface, does it roll freely?",
+      "role": "discriminator",
+      "intuition": "Resistance while rolling means seized caliper or parking brake; free roll confirms transmission fault."
+    },
+    {
+      "text": "Do you see any of these warnings right now?",
+      "role": "context_qualifier",
+      "intuition": "Active warnings narrow down which system is reporting a fault to the computer."
+    },
+    {
+      "text": "When do you mostly hear the noise?",
+      "role": "discriminator",
+      "intuition": "Braking noise means brake system; turning means CV joint or bearing; speed-dependent means wheel related."
+    },
+    {
+      "text": "Does the noise change more with engine RPM or vehicle speed?",
+      "role": "discriminator",
+      "intuition": "RPM-dependent means engine or accessories; speed-dependent means wheels, tires, or bearings."
+    },
+    {
+      "text": "How would you describe the pitch?",
+      "role": "context_qualifier",
+      "intuition": "High pitch suggests metal-on-metal or bearing; low rumble suggests tire or worn bushing."
+    },
+    {
+      "text": "Is it constant or rhythmic?",
+      "role": "discriminator",
+      "intuition": "Rhythmic thumping with wheel rotation means tire or wheel defect; constant means bearing or brake drag."
+    },
+    {
+      "text": "If you shift to neutral while moving, does the noise change?",
+      "role": "discriminator",
+      "intuition": "Noise stops in neutral means drivetrain issue; persists means wheel, tire, or bearing."
+    },
+    {
+      "text": "Which warning best matches what you see?",
+      "role": "discriminator",
+      "intuition": "Different lights indicate different systems: oil pressure is critical, check engine varies widely."
+    },
+    {
+      "text": "Is the light flashing or steady?",
+      "role": "discriminator",
+      "intuition": "Flashing check engine means active misfire causing catalyst damage; steady means stored code only."
+    },
+    {
+      "text": "Did it appear suddenly, or has it been on for a while?",
+      "role": "context_qualifier",
+      "intuition": "Sudden onset suggests recent failure; long-standing suggests minor issue or ignored problem."
+    },
+    {
+      "text": "When do you mostly feel the vibration?",
+      "role": "discriminator",
+      "intuition": "Highway speed means wheel balance or alignment; braking means warped rotor."
+    },
+    {
+      "text": "Where do you mostly feel it?",
+      "role": "discriminator",
+      "intuition": "Steering wheel means front wheels or brakes; seat means rear wheels or driveline."
+    },
+    {
+      "text": "Does it change noticeably with light braking?",
+      "role": "discriminator",
+      "intuition": "Changes with braking confirms brake rotor warp or pad issue rather than wheel balance."
+    },
+    {
+      "text": "Does it feel like the car is bouncing or hopping at speed?",
+      "role": "discriminator",
+      "intuition": "Hopping indicates out-of-round tire or separated belt rather than just imbalance."
+    },
+    {
+      "text": "What describes your brake issue best?",
+      "role": "discriminator",
+      "intuition": "Soft pedal means hydraulic leak; noise means wear; long stopping means pad wear or fade."
+    },
+    {
+      "text": "When does the noise occur?",
+      "role": "discriminator",
+      "intuition": "Only when pressing means pad wear; also when released means caliper dragging or stuck."
+    },
+    {
+      "text": "Is stopping distance longer than normal?",
+      "role": "discriminator",
+      "intuition": "Increased stopping distance with soft pedal confirms hydraulic failure rather than just air in lines."
+    },
+    {
+      "text": "Does the car pull to one side when braking?",
+      "role": "discriminator",
+      "intuition": "Pulling means uneven brake force from seized caliper, contaminated pad, or air in one line."
+    },
+    {
+      "text": "Do you notice a hot/burning smell after a short drive?",
+      "role": "discriminator",
+      "intuition": "Hot smell after short drive confirms caliper is dragging and overheating that wheel."
+    },
+    {
+      "text": "What best matches your tire problem?",
+      "role": "discriminator",
+      "intuition": "Visible flat is obvious; TPMS only means slow leak; thumping means structural damage."
+    },
+    {
+      "text": "Does the car pull strongly to one side while driving?",
+      "role": "discriminator",
+      "intuition": "Strong pull with tire issue means severely underinflated tire creating drag."
+    },
+    {
+      "text": "How does the tire lose air?",
+      "role": "discriminator",
+      "intuition": "Fast loss means puncture or damaged valve; slow means nail, bead leak, or rim crack."
+    },
+    {
+      "text": "What best describes the HVAC issue?",
+      "role": "discriminator",
+      "intuition": "No heat means coolant flow or thermostat; smell means leak; AC not cooling means refrigerant."
+    },
+    {
+      "text": "Does the engine reach normal temperature?",
+      "role": "discriminator",
+      "intuition": "Never reaching temp means stuck-open thermostat; normal temp means heater core or blend door issue."
+    },
+    {
+      "text": "Does air blow strongly from the vents?",
+      "role": "discriminator",
+      "intuition": "No airflow means blower motor dead; weak means resistor or cabin filter; strong means heater core."
+    },
+    {
+      "text": "Do you notice a sweet/coolant-like smell?",
+      "role": "discriminator",
+      "intuition": "Sweet smell means coolant leaking from heater core inside dash or external leak getting sucked in."
+    },
+    {
+      "text": "Has coolant been low recently?",
+      "role": "context_qualifier",
+      "intuition": "Needing frequent top-offs confirms leak rather than just low coolant from initial fill."
+    },
+    {
+      "text": "What smell do you notice from the vents?",
+      "role": "discriminator",
+      "intuition": "Exhaust means dangerous leak into cabin; fuel means injector leak; sweet means coolant leak."
+    },
+    {
+      "text": "Where do you notice it most?",
+      "role": "discriminator",
+      "intuition": "Outside only means external leak; in cabin means entering through vents or firewall breach."
+    },
+    {
+      "text": "Does the smell change when recirculation is ON?",
+      "role": "discriminator",
+      "intuition": "Better with recirc means external fumes coming in; worse means internal source like heater core."
+    },
+    {
+      "text": "Does it happen only when heat is ON?",
+      "role": "discriminator",
+      "intuition": "Only with heat means heater core specific; all the time means exhaust or external leak."
+    },
+    {
+      "text": "When A/C is ON, what best describes it?",
+      "role": "discriminator",
+      "intuition": "Blows warm means no refrigerant or compressor not engaging; weak means airflow restriction."
+    },
+    {
+      "text": "When does HVAC fail most often?",
+      "role": "context_qualifier",
+      "intuition": "Temperature-dependent failure suggests expansion/contraction issue with actuator or wiring connection."
+    },
+    {
+      "text": "Does fan speed change when adjusted?",
+      "role": "discriminator",
+      "intuition": "No speed change means blower motor or resistor dead; changes mean blend door or mode door issue."
+    },
+    {
+      "text": "Any clicking/actuator noise behind the dash?",
+      "role": "discriminator",
+      "intuition": "Clicking means blend door actuator trying to move but stuck or stripped gear."
+    }
+  ]
+}
